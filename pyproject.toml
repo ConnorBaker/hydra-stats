@@ -1,0 +1,51 @@
+[build-system]
+build-backend = "hatchling.build"
+requires      = [ "hatchling" ]
+
+[project]
+name = "hydra-stats"
+# Single source of truth; package.nix parses this file rather than duplicating.
+dependencies = [
+    # psycopg 3 API; block off major bumps until we review stub/surface changes.
+    "psycopg>=3.2,<4",
+    # Rich TTY output + tables. Pin to the v13 series; v14 would require review.
+    "rich>=13.0,<15",
+]
+description = "Per-job build statistics direct from the Hydra Postgres database"
+requires-python = ">=3.13"
+version = "2.0"
+
+[project.scripts]
+hydra-stats = "hydra_stats.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = [ "src/hydra_stats" ]
+
+[tool.ruff]
+exclude        = [ ".ruff_cache", "__pycache__" ]
+line-length    = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+ignore = [
+    "E501",    # long SQL / help strings are allowed
+    "PLR0913", # many function arguments
+    "PLR0912", # too many branches
+    "PLR0915", # too many statements
+    "PLR2004", # magic-value comparisons
+    "PLR0911", # too many return statements
+    "UP036",   # outdated target-version: irrelevant at py313
+]
+select = [ "E", "F", "W", "I", "UP", "B", "SIM", "PL" ]
+
+[tool.pyright]
+pythonVersion                  = "3.13"
+reportMissingImports           = true
+reportMissingParameterType     = "error"
+reportMissingTypeStubs         = false
+reportUnknownArgumentType      = "error"
+reportUnknownMemberType        = "error"
+reportUnknownParameterType     = "error"
+reportUnknownVariableType      = "error"
+reportUntypedFunctionDecorator = "error"
+typeCheckingMode               = "strict"
